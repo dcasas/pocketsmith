@@ -12,6 +12,18 @@ export default class Accounts {
 		return this.context.Client.get(`accounts/${id}`, callback);
 	}
 
+	getByTitle(title: string, callback?: Function): Promise<AccountInterface> {
+		return new Promise((resolve, reject) => {
+				this.getAll().then(accs => {
+					let acc = accs.find(a => { return a.title == title })
+					resolve(acc)
+					if (!(callback === void 0)) {
+						callback(acc);
+					}
+				}, err => { reject(err) })
+		});
+	}
+
 	getAllByUser(userId: number, callback?: Function): Promise<Array<AccountInterface>> {
 		return this.context.Client.get(`users/${userId}/accounts`, callback);
 	}

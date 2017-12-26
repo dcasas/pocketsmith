@@ -3,3 +3,5 @@ coverage/
 .nyc_output/
 *.log*
 .vscode/
+*.lock
+*-lock.json

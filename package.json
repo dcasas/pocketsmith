@@ -1,9 +1,11 @@
 {
   "name": "pocketsmith",
-  "version": "0.2.3",
+  "version": "0.2.3-dcasas",
   "description": "PocketSmith api wrapper for Node.",
   "main": "dist/index.js",
   "scripts": {
+    "start": "npm run build:live",
+    "build:live": "nodemon --exec tsc",
     "lint": "tslint -t verbose -c tslint.json $(find ./src -name *.ts)",
     "test": "nyc ./node_modules/mocha/bin/_mocha $(find ./test -name *.spec.js)",
     "test-watch": "NODE_ENV=test mocha --timeout 5000 $(find ./test -name *.spec.js) --watch",

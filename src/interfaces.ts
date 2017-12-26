@@ -44,6 +44,21 @@ export interface AccountInterface {
 	current_balance_date: string;
 	type: string;
 	is_net_worth: Boolean;
+	transactions: Promise<Iterable<TransactionInterface>>;
+	primary_transaction_account: TransactionAccountInterface;
+}
+
+export interface TransactionAccountInterface {
+	id: number;
+  name: string;
+  number?: string;
+  currency_code: string;
+  current_balance: string;
+  current_balance_date: string;
+	starting_balance: string;
+  starting_balance_date: string;
+	created_at: string;
+  updated_at: string;
 }
 
 export interface UserInterface {
@@ -68,4 +83,16 @@ export interface TransQueryInterface {
 	end_date?: string;
 	only_uncategorised?: number;
 	type?: string;
+}
+
+export interface TransactionInterface {
+	payee: string;
+	amount: string;
+	date: string;
+	is_transfer?: boolean;
+	labels?: Array<string>;
+	category_id?: string;
+	note?: string;
+	memo?: string;
+	cheque_number?: string;
 }
