@@ -8,7 +8,7 @@ var Client = (function () {
     }
     Client.prototype.resource = function (method, url, payload) {
         var _this = this;
-        console.log("method " + method + ", url: " + url + ", payload: " + payload);
+        //console.log("method " + method + ", url: " + url + ", payload: " + payload);
         return new Promise(function (resolve, reject) {
             Got("https://api.pocketsmith.com/v2/" + url, {
                 method: method,

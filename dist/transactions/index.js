@@ -5,29 +5,31 @@ var Transactions = (function () {
     function Transactions(context) {
         this.context = context;
     }
-    Transactions.prototype.getAll = function (query, userId, callback) {
-        var _this = this;
-        var page = 1;
-        query.page = page;
-        var url = "users/" + (userId || this.context.Me.data.id) + "/transactions";
-        var req = this.context.Client.get(url, void 0, query);
-        var nextCb = function (cb) {
-            page += 1;
-            query.page = page;
-            var resp = _this.context.Client.get(url, void 0, query);
-            resp.then(function (r) {
-                cb({ data: r, next: nextCb });
-            });
-            return resp;
-        };
-        return new Promise(function (resolve, reject) {
-            req.then(function (data) {
-                resolve({ data: data, next: nextCb });
-            }).catch(function (e) {
-                reject(e);
-            });
-        });
-    };
+    // Transactions.prototype.getAll = function (query, userId, callback) {
+    //     var _this = this;
+    //     var page = 1;
+    //     query.page = page;
+    //     var url = "users/" + (userId || this.context.Me.data.id) + "/transactions";
+    //     var req = this.context.Client.get(url, void 0, query);
+    //     var nextCb = function (cb) {
+    //         page += 1;
+    //         query.page = page;
+    //         var resp = _this.context.Client.get(url, void 0, query);
+    //         resp.then(function (r) {
+    //             cb({ data: r, next: nextCb });
+    //         });
+    //         return resp;
+    //     };
+    //     return new Promise(function (resolve, reject) {
+    //         req.then(function (data) {
+    //             resolve({ data: data, next: nextCb });
+    //         }).catch(function (e) {
+    //             reject(e);
+    //         });
+    //     });
+    // };
+    //
+
     Transactions.prototype.createInTransactionAccount = function (tx, accId) {
         var url = "transaction_accounts/" + accId + "/transactions";
         return this.context.Client.post(url, void 0, tx);
@@ -44,27 +46,33 @@ var Transactions = (function () {
         var _this = this;
         query.page = query.page ? query.page : 1;
         var url = "transaction_accounts/" + accId + "/transactions";
-        var req = this.context.Client.get(url, void 0, query);
-        var nextCb = function (cb) {
-            query.page += 1;
-            return _this.context.Client.get(url, void 0, query).then(function (r) {
-                cb({ transactions: r, next: nextCb });
-            });
+
+        var getAll = function (acc) {
+            var get = function (page) {
+              if(page.error == "Requested page is out of bounds") {
+                console.log(`[PS] no more pages`)
+                resolve(acc);
+              }
+
+              console.log(`[PS] adding ${page.length} transactions to the result`)
+              acc.append(page);
+              query.page += 1;
+              console.log(`[PS] requesting new page ${query.page}`)
+              return _this.context.Client.get(url, void 0, query).then(get)
+            };
+
+            return _this.context.Client.get(url, void 0, query).then(get);
         };
-        return new Promise(function (resolve, reject) {
-            req.then(function (data) {
-                resolve({ transactions: data, next: nextCb });
-            }).catch(function (e) {
-                reject(e);
-            });
-        });
+
+        return getAll([]);
     };
+
     Transactions.prototype.listInTransactionAccountByTitle = function (query, title) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             _this.context.Accounts.getByTitle(title).then(function (acc) {
                 resolve(_this.listInTransactionAccount(query, acc.primary_transaction_account.id));
-            }, function (err) { reject(err); });
+            }, reject);
         });
     };
     return Transactions;
